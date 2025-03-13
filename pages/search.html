@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        /* iOS 状态栏 */
+        .status-bar {
+            height: 44px;
+            background-color: #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            font-size: 14px;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        .status-bar-time {
+            font-weight: bold;
+        }
+        
+        .status-bar-icons {
+            display: flex;
+            align-items: center;
+        }
+        
+        .status-bar-icons i {
+            margin-left: 5px;
+        }
+        
+        /* 内容区域 */
+        .content-area {
+            height: calc(100vh - 44px - 83px);
+            overflow-y: auto;
+            padding-bottom: 20px;
+        }
+        
+        /* 底部导航栏 */
+        .tab-bar {
+            height: 83px;
+            background-color: rgba(20, 20, 20, 0.9);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 50;
+            padding-bottom: 20px;
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #8e8e93;
+            font-size: 10px;
+            padding: 5px 0;
+        }
+        
+        .tab-item.active {
+            color: #e50914;
+        }
+        
+        .tab-item i {
+            font-size: 22px;
+            margin-bottom: 3px;
+        }
+        
+        /* 滚动条样式 */
+        .content-area::-webkit-scrollbar {
+            width: 0;
+            background: transparent;
+        }
+        
+        /* 搜索页特定样式 */
+        .search-header {
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            background-color: #000;
+            z-index: 40;
+        }
+        
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: #333;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+        }
+        
+        .search-icon {
+            color: #8e8e93;
+            margin-right: 10px;
+        }
+        
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+        }
+        
+        .search-input:focus {
+            outline: none;
+        }
+        
+        .search-input::placeholder {
+            color: #8e8e93;
+        }
+        
+        .search-clear {
+            color: #8e8e93;
+            background-color: #555;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+        
+        .filter-tabs {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        
+        .filter-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .filter-tab {
+            flex: 0 0 auto;
+            padding: 8px 15px;
+            margin-right: 8px;
+            background-color: #333;
+            border-radius: 20px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .filter-tab.active {
+            background-color: #e50914;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 15px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-title .see-all {
+            font-size: 14px;
+            font-weight: normal;
+            color: #8e8e93;
+        }
+        
+        .trending-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 0 15px;
+        }
+        
+        .trending-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 100px;
+        }
+        
+        .trending-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .trending-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            padding: 10px;
+        }
+        
+        .trending-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+        
+        .trending-info {
+            font-size: 12px;
+            color: #8e8e93;
+        }
+        
+        .trending-rank {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(229, 9, 20, 0.8);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .recent-searches {
+            padding: 0 15px;
+        }
+        
+        .recent-search-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .recent-search-icon {
+            color: #8e8e93;
+            margin-right: 15px;
+        }
+        
+        .recent-search-text {
+            flex: 1;
+        }
+        
+        .recent-search-remove {
+            color: #8e8e93;
+        }
+        
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 0 15px;
+        }
+        
+        .category-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 80px;
+        }
+        
+        .category-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.7);
+        }
+        
+        .category-name {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- iOS 状态栏 -->
+    <div class="status-bar">
+        <div class="status-bar-time">9:41</div>
+        <div class="status-bar-icons">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-full"></i>
+        </div>
+    </div>
+    
+    <!-- 内容区域 -->
+    <div class="content-area">
+        <!-- 搜索头部 -->
+        <div class="search-header">
+            <div class="search-bar">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="搜索电影、电视剧、演员...">
+                <div class="search-clear">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            
+            <div class="filter-tabs">
+                <div class="filter-tab active">全部</div>
+                <div class="filter-tab">电影</div>
+                <div class="filter-tab">电视剧</div>
+                <div class="filter-tab">动漫</div>
+                <div class="filter-tab">纪录片</div>
+                <div class="filter-tab">综艺</div>
+                <div class="filter-tab">演员</div>
+            </div>
+        </div>
+        
+        <!-- 热门搜索 -->
+        <div class="section-title">
+            <span>热门搜索</span>
+            <span class="see-all">查看全部</span>
+        </div>
+        <div class="trending-grid">
+            <div class="trending-item">
+                <div class="trending-rank">1</div>
+                <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Trending">
+                <div class="trending-overlay">
+                    <div class="trending-title">流浪地球2</div>
+                    <div class="trending-info">科幻 • 2023</div>
+                </div>
+            </div>
+            <div class="trending-item">
+                <div class="trending-rank">2</div>
+                <img src="https://images.unsplash.com/photo-1626563120608-7a304f643e9f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Trending">
+                <div class="trending-overlay">
+                    <div class="trending-title">满江红</div>
+                    <div class="trending-info">历史 • 2023</div>
+                </div>
+            </div>
+            <div class="trending-item">
+                <div class="trending-rank">3</div>
+                <img src="https://images.unsplash.com/photo-1626814026359-c2ef05f9b3c8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Trending">
+                <div class="trending-overlay">
+                    <div class="trending-title">独行月球</div>
+                    <div class="trending-info">喜剧 • 2022</div>
+                </div>
+            </div>
+            <div class="trending-item">
+                <div class="trending-rank">4</div>
+                <img src="https://images.unsplash.com/photo-1626814026486-bbb9a9bb2e3a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Trending">
+                <div class="trending-overlay">
+                    <div class="trending-title">长安三万里</div>
+                    <div class="trending-info">动画 • 2023</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 最近搜索 -->
+        <div class="section-title">
+            <span>最近搜索</span>
+            <span class="see-all">清除全部</span>
+        </div>
+        <div class="recent-searches">
+            <div class="recent-search-item">
+                <i class="fas fa-history recent-search-icon"></i>
+                <div class="recent-search-text">流浪地球</div>
+                <i class="fas fa-times recent-search-remove"></i>
+            </div>
+            <div class="recent-search-item">
+                <i class="fas fa-history recent-search-icon"></i>
+                <div class="recent-search-text">吴京</div>
+                <i class="fas fa-times recent-search-remove"></i>
+            </div>
+            <div class="recent-search-item">
+                <i class="fas fa-history recent-search-icon"></i>
+                <div class="recent-search-text">三体</div>
+                <i class="fas fa-times recent-search-remove"></i>
+            </div>
+        </div>
+        
+        <!-- 分类浏览 -->
+        <div class="section-title">
+            <span>分类浏览</span>
+        </div>
+        <div class="category-grid">
+            <div class="category-item">
+                <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Category">
+                <div class="category-name">动作</div>
+            </div>
+            <div class="category-item">
+                <img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Category">
+                <div class="category-name">喜剧</div>
+            </div>
+            <div class="category-item">
+                <img src="https://images.unsplash.com/photo-1535016120720-40c646be5580?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Category">
+                <div class="category-name">科幻</div>
+            </div>
+            <div class="category-item">
+                <img src="https://images.unsplash.com/photo-1579445710183-f9a816f5da05?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Category">
+                <div class="category-name">爱情</div>
+            </div>
+            <div class="category-item">
+                <img src="https://images.unsplash.com/photo-1568111561564-08726a1563e1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Category">
+                <div class="category-name">恐怖</div>
+            </div>
+            <div class="category-item">
+                <img src="https://images.unsplash.com/photo-1611419010196-a360856fc42f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Category">
+                <div class="category-name">更多</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部导航栏 -->
+    <div class="tab-bar">
+        <div class="tab-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </div>
+        <div class="tab-item active">
+            <i class="fas fa-search"></i>
+            <span>搜索</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-play-circle"></i>
+            <span>观看</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-users"></i>
+            <span>社区</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </div>
+</body>
+</html> 

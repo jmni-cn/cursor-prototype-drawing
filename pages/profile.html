@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        /* iOS 状态栏 */
+        .status-bar {
+            height: 44px;
+            background-color: #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            font-size: 14px;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        .status-bar-time {
+            font-weight: bold;
+        }
+        
+        .status-bar-icons {
+            display: flex;
+            align-items: center;
+        }
+        
+        .status-bar-icons i {
+            margin-left: 5px;
+        }
+        
+        /* 内容区域 */
+        .content-area {
+            height: calc(100vh - 44px - 83px);
+            overflow-y: auto;
+            padding-bottom: 20px;
+        }
+        
+        /* 底部导航栏 */
+        .tab-bar {
+            height: 83px;
+            background-color: rgba(20, 20, 20, 0.9);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 50;
+            padding-bottom: 20px;
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #8e8e93;
+            font-size: 10px;
+            padding: 5px 0;
+        }
+        
+        .tab-item.active {
+            color: #e50914;
+        }
+        
+        .tab-item i {
+            font-size: 22px;
+            margin-bottom: 3px;
+        }
+        
+        /* 滚动条样式 */
+        .content-area::-webkit-scrollbar {
+            width: 0;
+            background: transparent;
+        }
+        
+        /* 个人中心特定样式 */
+        .profile-header {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .profile-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .header-actions {
+            display: flex;
+        }
+        
+        .header-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+        }
+        
+        .user-profile {
+            padding: 20px 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 40px;
+            margin-right: 15px;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .user-id {
+            color: #8e8e93;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .user-bio {
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .user-stats {
+            display: flex;
+        }
+        
+        .user-stat {
+            margin-right: 20px;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        
+        .stat-label {
+            color: #8e8e93;
+        }
+        
+        .edit-profile-btn {
+            border: 1px solid #e50914;
+            color: #e50914;
+            border-radius: 5px;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .membership-card {
+            margin: 0 15px 20px;
+            background: linear-gradient(135deg, #e50914 0%, #b20710 100%);
+            border-radius: 10px;
+            padding: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .membership-card::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            border-radius: 75px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .membership-card::after {
+            content: "";
+            position: absolute;
+            bottom: -60px;
+            left: -60px;
+            width: 180px;
+            height: 180px;
+            border-radius: 90px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .membership-type {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .membership-expires {
+            font-size: 14px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .membership-benefits {
+            display: flex;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .membership-benefit {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 5px 10px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        
+        .section-tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 15px;
+        }
+        
+        .section-tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px 0;
+            font-size: 14px;
+            font-weight: bold;
+            color: #8e8e93;
+            position: relative;
+        }
+        
+        .section-tab.active {
+            color: #fff;
+        }
+        
+        .section-tab.active::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 25%;
+            width: 50%;
+            height: 3px;
+            background-color: #e50914;
+            border-radius: 1.5px;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 0 15px;
+        }
+        
+        .content-item {
+            position: relative;
+            border-radius: 5px;
+            overflow: hidden;
+            aspect-ratio: 2/3;
+        }
+        
+        .content-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .content-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            padding: 10px;
+            font-size: 10px;
+        }
+        
+        .content-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: #e50914;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 15px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-title .see-all {
+            font-size: 14px;
+            font-weight: normal;
+            color: #8e8e93;
+        }
+        
+        .menu-list {
+            margin: 0 15px;
+        }
+        
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        
+        .menu-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+        
+        .menu-label {
+            flex: 1;
+            font-size: 16px;
+        }
+        
+        .menu-arrow {
+            color: #8e8e93;
+        }
+        
+        .menu-left {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- iOS 状态栏 -->
+    <div class="status-bar">
+        <div class="status-bar-time">9:41</div>
+        <div class="status-bar-icons">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-full"></i>
+        </div>
+    </div>
+    
+    <!-- 内容区域 -->
+    <div class="content-area">
+        <!-- 个人中心头部 -->
+        <div class="profile-header">
+            <div class="profile-title">我的</div>
+            <div class="header-actions">
+                <div class="header-icon">
+                    <i class="fas fa-cog"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 用户资料 -->
+        <div class="user-profile">
+            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" alt="Avatar" class="user-avatar">
+            <div class="user-info">
+                <div class="user-name">张三</div>
+                <div class="user-id">ID: 12345678</div>
+                <div class="user-bio">热爱电影的普通人，最近迷上了科幻片。</div>
+                <div class="user-stats">
+                    <div class="user-stat">
+                        <span class="stat-value">128</span>
+                        <span class="stat-label">关注</span>
+                    </div>
+                    <div class="user-stat">
+                        <span class="stat-value">256</span>
+                        <span class="stat-label">粉丝</span>
+                    </div>
+                    <div class="user-stat">
+                        <span class="stat-value">64</span>
+                        <span class="stat-label">收藏</span>
+                    </div>
+                </div>
+                <div class="edit-profile-btn">编辑资料</div>
+            </div>
+        </div>
+        
+        <!-- 会员卡 -->
+        <div class="membership-card">
+            <div class="membership-type">高级会员</div>
+            <div class="membership-expires">有效期至 2024年12月31日</div>
+            <div class="membership-benefits">
+                <div class="membership-benefit">4K超清</div>
+                <div class="membership-benefit">无广告</div>
+                <div class="membership-benefit">多设备</div>
+                <div class="membership-benefit">离线下载</div>
+            </div>
+        </div>
+        
+        <!-- 内容分类标签 -->
+        <div class="section-tabs">
+            <div class="section-tab active">收藏</div>
+            <div class="section-tab">观看历史</div>
+            <div class="section-tab">下载</div>
+        </div>
+        
+        <!-- 收藏内容 -->
+        <div class="content-grid">
+            <div class="content-item">
+                <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Content">
+            </div>
+            <div class="content-item">
+                <img src="https://images.unsplash.com/photo-1626563120608-7a304f643e9f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Content">
+            </div>
+            <div class="content-item">
+                <img src="https://images.unsplash.com/photo-1626814026359-c2ef05f9b3c8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Content">
+            </div>
+            <div class="content-item">
+                <img src="https://images.unsplash.com/photo-1626814026486-bbb9a9bb2e3a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Content">
+                <div class="content-progress">
+                    <div class="progress-bar" style="width: 45%;"></div>
+                </div>
+            </div>
+            <div class="content-item">
+                <img src="https://images.unsplash.com/photo-1626814026760-5d19b8768c3a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Content">
+            </div>
+            <div class="content-item">
+                <img src="https://images.unsplash.com/photo-1626814026274-3e094b6b9c0d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Content">
+                <div class="content-progress">
+                    <div class="progress-bar" style="width: 75%;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 菜单列表 -->
+        <div class="section-title">常用功能</div>
+        <div class="menu-list">
+            <div class="menu-item">
+                <div class="menu-left">
+                    <div class="menu-icon">
+                        <i class="fas fa-heart text-red-600"></i>
+                    </div>
+                    <div class="menu-label">我的收藏</div>
+                </div>
+                <div class="menu-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-left">
+                    <div class="menu-icon">
+                        <i class="fas fa-history text-blue-500"></i>
+                    </div>
+                    <div class="menu-label">观看历史</div>
+                </div>
+                <div class="menu-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-left">
+                    <div class="menu-icon">
+                        <i class="fas fa-download text-green-500"></i>
+                    </div>
+                    <div class="menu-label">我的下载</div>
+                </div>
+                <div class="menu-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-left">
+                    <div class="menu-icon">
+                        <i class="fas fa-users text-purple-500"></i>
+                    </div>
+                    <div class="menu-label">我的好友</div>
+                </div>
+                <div class="menu-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-left">
+                    <div class="menu-icon">
+                        <i class="fas fa-credit-card text-yellow-500"></i>
+                    </div>
+                    <div class="menu-label">会员中心</div>
+                </div>
+                <div class="menu-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-left">
+                    <div class="menu-icon">
+                        <i class="fas fa-headset text-indigo-500"></i>
+                    </div>
+                    <div class="menu-label">客户服务</div>
+                </div>
+                <div class="menu-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部导航栏 -->
+    <div class="tab-bar">
+        <div class="tab-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-search"></i>
+            <span>搜索</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-play-circle"></i>
+            <span>观看</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-users"></i>
+            <span>社区</span>
+        </div>
+        <div class="tab-item active">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </div>
+</body>
+</html> 

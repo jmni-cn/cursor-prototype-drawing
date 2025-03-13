@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>播放页面</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        /* iOS 状态栏 */
+        .status-bar {
+            height: 44px;
+            background-color: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            font-size: 14px;
+            font-weight: 600;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 50;
+        }
+        
+        .status-bar-time {
+            font-weight: bold;
+        }
+        
+        .status-bar-icons {
+            display: flex;
+            align-items: center;
+        }
+        
+        .status-bar-icons i {
+            margin-left: 5px;
+        }
+        
+        /* 内容区域 */
+        .content-area {
+            height: 100vh;
+            position: relative;
+        }
+        
+        /* 播放器区域 */
+        .player-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-color: #000;
+        }
+        
+        .video-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        /* 播放器控制层 */
+        .player-controls {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 20%, rgba(0,0,0,0) 80%, rgba(0,0,0,0.7) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 60px 20px 30px;
+            box-sizing: border-box;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+        
+        .player-controls.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .top-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-button {
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .video-title {
+            font-size: 16px;
+            font-weight: bold;
+            flex: 1;
+            margin-left: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .top-right-controls {
+            display: flex;
+        }
+        
+        .control-button {
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+        }
+        
+        .center-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .play-pause-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .bottom-controls {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .progress-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .current-time {
+            font-size: 12px;
+            margin-right: 10px;
+            width: 40px;
+            text-align: right;
+        }
+        
+        .progress-bar {
+            flex: 1;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            position: relative;
+        }
+        
+        .progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background-color: #e50914;
+            border-radius: 2px;
+        }
+        
+        .progress-handle {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            background-color: #e50914;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        .total-time {
+            font-size: 12px;
+            margin-left: 10px;
+            width: 40px;
+        }
+        
+        .bottom-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .left-buttons, .right-buttons {
+            display: flex;
+        }
+        
+        .control-icon {
+            margin-right: 20px;
+            font-size: 20px;
+        }
+        
+        .control-icon:last-child {
+            margin-right: 0;
+        }
+        
+        /* 社交功能 */
+        .social-panel {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 250px;
+            height: 300px;
+            background-color: rgba(20, 20, 20, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 10px 0 0 0;
+            padding: 15px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            z-index: 60;
+        }
+        
+        .social-panel.active {
+            transform: translateY(0);
+        }
+        
+        .social-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .social-title {
+            font-weight: bold;
+        }
+        
+        .close-social {
+            width: 24px;
+            height: 24px;
+            border-radius: 12px;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .chat-container {
+            height: 200px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+        
+        .chat-container::-webkit-scrollbar {
+            width: 0;
+            background: transparent;
+        }
+        
+        .chat-message {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .chat-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 15px;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .chat-content {
+            flex: 1;
+        }
+        
+        .chat-name {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        
+        .chat-text {
+            font-size: 12px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 8px 10px;
+            line-height: 1.3;
+        }
+        
+        .chat-input-container {
+            display: flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 5px 10px;
+        }
+        
+        .chat-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 12px;
+            padding: 5px;
+        }
+        
+        .chat-input:focus {
+            outline: none;
+        }
+        
+        .send-button {
+            color: #e50914;
+            font-size: 16px;
+            margin-left: 5px;
+        }
+        
+        /* 播放速度选择 */
+        .speed-panel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(20, 20, 20, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 15px;
+            width: 200px;
+            display: none;
+            z-index: 70;
+        }
+        
+        .speed-title {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .speed-options {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .speed-option {
+            padding: 10px 0;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .speed-option:last-child {
+            border-bottom: none;
+        }
+        
+        .speed-option.active {
+            color: #e50914;
+            font-weight: bold;
+        }
+        
+        /* 画中画按钮 */
+        .pip-button {
+            position: absolute;
+            bottom: 100px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 40;
+        }
+        
+        /* 锁定按钮 */
+        .lock-button {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 40;
+        }
+    </style>
+</head>
+<body>
+    <!-- iOS 状态栏 -->
+    <div class="status-bar">
+        <div class="status-bar-time">9:41</div>
+        <div class="status-bar-icons">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-full"></i>
+        </div>
+    </div>
+    
+    <!-- 内容区域 -->
+    <div class="content-area">
+        <!-- 播放器容器 -->
+        <div class="player-container">
+            <div class="video-container">
+                <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Video" class="video-placeholder">
+            </div>
+            
+            <!-- 播放器控制层 -->
+            <div class="player-controls">
+                <div class="top-controls">
+                    <div class="back-button">
+                        <i class="fas fa-chevron-left"></i>
+                    </div>
+                    <div class="video-title">流浪地球2</div>
+                    <div class="top-right-controls">
+                        <div class="control-button">
+                            <i class="fas fa-closed-captioning"></i>
+                        </div>
+                        <div class="control-button">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="center-controls">
+                    <div class="play-pause-button">
+                        <i class="fas fa-pause"></i>
+                    </div>
+                </div>
+                
+                <div class="bottom-controls">
+                    <div class="progress-container">
+                        <div class="current-time">45:23</div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 35%;"></div>
+                            <div class="progress-handle" style="left: 35%;"></div>
+                        </div>
+                        <div class="total-time">2:53:12</div>
+                    </div>
+                    
+                    <div class="bottom-buttons">
+                        <div class="left-buttons">
+                            <i class="fas fa-volume-up control-icon"></i>
+                            <i class="fas fa-users control-icon"></i>
+                        </div>
+                        <div class="right-buttons">
+                            <i class="fas fa-tachometer-alt control-icon"></i>
+                            <i class="fas fa-expand control-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 画中画按钮 -->
+            <div class="pip-button">
+                <i class="fas fa-clone fa-rotate-180"></i>
+            </div>
+            
+            <!-- 锁定按钮 -->
+            <div class="lock-button">
+                <i class="fas fa-unlock"></i>
+            </div>
+            
+            <!-- 社交面板 -->
+            <div class="social-panel">
+                <div class="social-header">
+                    <div class="social-title">实时聊天 (8人在线)</div>
+                    <div class="close-social">
+                        <i class="fas fa-times"></i>
+                    </div>
+                </div>
+                
+                <div class="chat-container">
+                    <div class="chat-message">
+                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" alt="Avatar" class="chat-avatar">
+                        <div class="chat-content">
+                            <div class="chat-name">张三</div>
+                            <div class="chat-text">这个场景太震撼了！</div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-message">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" alt="Avatar" class="chat-avatar">
+                        <div class="chat-content">
+                            <div class="chat-name">李四</div>
+                            <div class="chat-text">吴京的演技真的进步很大，这段太感人了</div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-message">
+                        <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" alt="Avatar" class="chat-avatar">
+                        <div class="chat-content">
+                            <div class="chat-name">王五</div>
+                            <div class="chat-text">特效做得太棒了，完全不输好莱坞大片</div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-message">
+                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" alt="Avatar" class="chat-avatar">
+                        <div class="chat-content">
+                            <div class="chat-name">赵六</div>
+                            <div class="chat-text">这个配乐太配了，听得我热血沸腾</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-input-container">
+                    <input type="text" class="chat-input" placeholder="发送消息...">
+                    <i class="fas fa-paper-plane send-button"></i>
+                </div>
+            </div>
+            
+            <!-- 播放速度面板 -->
+            <div class="speed-panel">
+                <div class="speed-title">播放速度</div>
+                <div class="speed-options">
+                    <div class="speed-option">0.5x</div>
+                    <div class="speed-option">0.75x</div>
+                    <div class="speed-option">1.0x</div>
+                    <div class="speed-option active">1.25x</div>
+                    <div class="speed-option">1.5x</div>
+                    <div class="speed-option">2.0x</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
