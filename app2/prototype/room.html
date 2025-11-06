@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>房间 - ScoreKeeper</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* iOS状态栏 */
+        .status-bar {
+            height: 44px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        
+        /* 内容区域 */
+        .content {
+            padding-top: 44px;
+            padding-bottom: 20px;
+            min-height: 100vh;
+        }
+        
+        /* 房间信息卡片 */
+        .room-header {
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.1) 0%, transparent 100%);
+        }
+        
+        .room-info-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .room-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .room-name {
+            color: white;
+            font-size: 22px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .ws-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #22d3ee;
+            box-shadow: 0 0 10px rgba(34, 211, 238, 0.8);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .room-id-badge {
+            background: linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(34, 211, 238, 0.3);
+        }
+        
+        .room-meta {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        
+        .room-meta-item {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+        
+        .room-meta-value {
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .room-meta-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        
+        /* 操作按钮组 */
+        .action-bar {
+            padding: 15px 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 14px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%);
+            color: white;
+            box-shadow: 0 6px 20px rgba(34, 211, 238, 0.3);
+        }
+        
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* 玩家列表 */
+        .players-section {
+            padding: 0 20px 20px;
+        }
+        
+        .section-title {
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .section-title-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: #22d3ee;
+        }
+        
+        .player-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s;
+        }
+        
+        .player-card:active {
+            transform: scale(0.98);
+            border-color: rgba(34, 211, 238, 0.5);
+        }
+        
+        .player-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .player-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #22d3ee 0%, #ff48f9 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(34, 211, 238, 0.4);
+        }
+        
+        .player-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .player-name {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .player-badge {
+            background: linear-gradient(135deg, #ff48f9 0%, #ff0080 100%);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+        
+        .player-status {
+            color: #94a3b8;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .online-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #22d3ee;
+            box-shadow: 0 0 6px rgba(34, 211, 238, 0.8);
+        }
+        
+        .player-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+        }
+        
+        .player-score {
+            color: white;
+            font-size: 24px;
+            font-weight: 900;
+            text-shadow: 0 0 15px rgba(34, 211, 238, 0.5);
+        }
+        
+        .player-score.positive {
+            color: #22d3ee;
+        }
+        
+        .player-score.negative {
+            color: #ef4444;
+        }
+        
+        .add-score-btn {
+            background: linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(34, 211, 238, 0.3);
+        }
+        
+        .add-score-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* 计分板 */
+        .scoreboard-section {
+            padding: 0 20px 20px;
+        }
+        
+        .scoreboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .scoreboard-item {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .rank-badge {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #94a3b8;
+        }
+        
+        .rank-badge.top1 {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
+        }
+        
+        .rank-badge.top2 {
+            background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+            color: white;
+        }
+        
+        .rank-badge.top3 {
+            background: linear-gradient(135deg, #d97706 0%, #92400e 100%);
+            color: white;
+        }
+        
+        .scoreboard-player {
+            flex: 1;
+            margin-left: 12px;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+        }
+        
+        .scoreboard-score {
+            font-size: 20px;
+            font-weight: 900;
+        }
+        
+        /* 浮动操作按钮 */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff48f9 0%, #ff0080 100%);
+            color: white;
+            border: none;
+            font-size: 24px;
+            box-shadow: 0 10px 30px rgba(255, 72, 249, 0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+        
+        .fab:active {
+            transform: scale(0.9);
+        }
+    </style>
+</head>
+<body>
+    <!-- iOS状态栏 -->
+    <div class="status-bar">
+        <div class="time">9:41</div>
+        <div class="icons">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-three-quarters"></i>
+        </div>
+    </div>
+    
+    <!-- 主内容区域 -->
+    <div class="content">
+        <!-- 房间信息 -->
+        <div class="room-header">
+            <div class="room-info-card">
+                <div class="room-title-row">
+                    <div class="room-name">
+                        <span class="ws-status"></span>
+                        <span>🀄 周末麻将局</span>
+                    </div>
+                    <div class="room-id-badge">
+                        #A8F2K
+                    </div>
+                </div>
+                <div class="room-meta">
+                    <div class="room-meta-item">
+                        <div class="room-meta-value">4/4</div>
+                        <div class="room-meta-label">
+                            <i class="fas fa-users"></i>
+                            <span>玩家</span>
+                        </div>
+                    </div>
+                    <div class="room-meta-item">
+                        <div class="room-meta-value">1:23</div>
+                        <div class="room-meta-label">
+                            <i class="fas fa-clock"></i>
+                            <span>时长</span>
+                        </div>
+                    </div>
+                    <div class="room-meta-item">
+                        <div class="room-meta-value">进行中</div>
+                        <div class="room-meta-label">
+                            <i class="fas fa-circle" style="font-size: 8px;"></i>
+                            <span>状态</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 操作按钮组 -->
+        <div class="action-bar">
+            <button class="action-btn btn-outline">
+                <i class="fas fa-share-alt"></i>
+                分享
+            </button>
+            <button class="action-btn btn-primary">
+                <i class="fas fa-chart-line"></i>
+                统计
+            </button>
+            <button class="action-btn btn-danger">
+                <i class="fas fa-flag-checkered"></i>
+                结束
+            </button>
+        </div>
+        
+        <!-- 玩家列表 -->
+        <div class="players-section">
+            <div class="section-title">
+                <div class="section-title-left">
+                    <i class="fas fa-users"></i>
+                    <span>玩家列表</span>
+                </div>
+                <span style="color: #94a3b8; font-size: 14px; font-weight: 400;">4人在线</span>
+            </div>
+            
+            <!-- 玩家1 - 房主 -->
+            <div class="player-card">
+                <div class="player-left">
+                    <div class="player-avatar">张</div>
+                    <div class="player-info">
+                        <div class="player-name">
+                            <span>张小明</span>
+                            <span class="player-badge">房主</span>
+                        </div>
+                        <div class="player-status">
+                            <span class="online-dot"></span>
+                            <span>在线</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="player-right">
+                    <div class="player-score positive">+285</div>
+                    <button class="add-score-btn">
+                        <i class="fas fa-plus"></i> 加分
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 玩家2 -->
+            <div class="player-card">
+                <div class="player-left">
+                    <div class="player-avatar" style="background: linear-gradient(135deg, #ff48f9 0%, #ff0080 100%);">李</div>
+                    <div class="player-info">
+                        <div class="player-name">
+                            <span>李华</span>
+                        </div>
+                        <div class="player-status">
+                            <span class="online-dot"></span>
+                            <span>在线</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="player-right">
+                    <div class="player-score negative">-120</div>
+                    <button class="add-score-btn">
+                        <i class="fas fa-plus"></i> 加分
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 玩家3 -->
+            <div class="player-card">
+                <div class="player-left">
+                    <div class="player-avatar" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">王</div>
+                    <div class="player-info">
+                        <div class="player-name">
+                            <span>王芳</span>
+                        </div>
+                        <div class="player-status">
+                            <span class="online-dot"></span>
+                            <span>在线</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="player-right">
+                    <div class="player-score positive">+45</div>
+                    <button class="add-score-btn">
+                        <i class="fas fa-plus"></i> 加分
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 玩家4 -->
+            <div class="player-card">
+                <div class="player-left">
+                    <div class="player-avatar" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">刘</div>
+                    <div class="player-info">
+                        <div class="player-name">
+                            <span>刘强</span>
+                        </div>
+                        <div class="player-status">
+                            <span class="online-dot"></span>
+                            <span>在线</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="player-right">
+                    <div class="player-score negative">-210</div>
+                    <button class="add-score-btn">
+                        <i class="fas fa-plus"></i> 加分
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 实时排行榜 -->
+        <div class="scoreboard-section">
+            <div class="section-title">
+                <div class="section-title-left">
+                    <i class="fas fa-trophy"></i>
+                    <span>实时排名</span>
+                </div>
+            </div>
+            <div class="scoreboard-list">
+                <div class="scoreboard-item">
+                    <div class="rank-badge top1">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div class="scoreboard-player">张小明</div>
+                    <div class="scoreboard-score positive">+285</div>
+                </div>
+                <div class="scoreboard-item">
+                    <div class="rank-badge top2">2</div>
+                    <div class="scoreboard-player">王芳</div>
+                    <div class="scoreboard-score positive">+45</div>
+                </div>
+                <div class="scoreboard-item">
+                    <div class="rank-badge top3">3</div>
+                    <div class="scoreboard-player">李华</div>
+                    <div class="scoreboard-score negative">-120</div>
+                </div>
+                <div class="scoreboard-item">
+                    <div class="rank-badge">4</div>
+                    <div class="scoreboard-player">刘强</div>
+                    <div class="scoreboard-score negative">-210</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 浮动操作按钮 -->
+    <button class="fab">
+        <i class="fas fa-plus"></i>
+    </button>
+</body>
+</html>
+

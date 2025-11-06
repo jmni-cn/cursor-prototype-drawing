@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>统计 - ScoreKeeper</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* iOS状态栏 */
+        .status-bar {
+            height: 44px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        
+        /* 内容区域 */
+        .content {
+            padding-top: 44px;
+            padding-bottom: 80px;
+            min-height: 100vh;
+        }
+        
+        /* 统计概览 */
+        .stats-overview {
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.1) 0%, transparent 100%);
+        }
+        
+        .stats-title {
+            color: white;
+            font-size: 22px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-card.income {
+            border-color: rgba(34, 211, 238, 0.3);
+            background: rgba(34, 211, 238, 0.05);
+        }
+        
+        .stat-card.expense {
+            border-color: rgba(239, 68, 68, 0.3);
+            background: rgba(239, 68, 68, 0.05);
+        }
+        
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 10px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .stat-card.income .stat-icon {
+            background: linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%);
+            color: white;
+        }
+        
+        .stat-card.expense .stat-icon {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+        
+        .stat-label {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 900;
+        }
+        
+        .stat-card.income .stat-value {
+            color: #22d3ee;
+            text-shadow: 0 0 15px rgba(34, 211, 238, 0.3);
+        }
+        
+        .stat-card.expense .stat-value {
+            color: #ef4444;
+            text-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+        }
+        
+        .stat-detail {
+            color: #64748b;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+        
+        /* 筛选标签 */
+        .filter-tabs {
+            padding: 20px 20px 15px;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+        }
+        
+        .filter-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .filter-tab {
+            padding: 8px 16px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .filter-tab.active {
+            background: linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 4px 15px rgba(34, 211, 238, 0.3);
+        }
+        
+        .filter-tab:active {
+            transform: scale(0.95);
+        }
+        
+        /* 转移记录列表 */
+        .transfers-section {
+            padding: 0 20px 20px;
+        }
+        
+        .section-title {
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .section-title-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title i {
+            color: #22d3ee;
+        }
+        
+        .count-badge {
+            color: #94a3b8;
+            font-size: 14px;
+            font-weight: 400;
+        }
+        
+        .transfer-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .transfer-item {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 16px;
+            transition: all 0.3s;
+        }
+        
+        .transfer-item:active {
+            transform: scale(0.98);
+        }
+        
+        .transfer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .transfer-players {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+        }
+        
+        .transfer-from {
+            color: #94a3b8;
+            font-weight: 500;
+        }
+        
+        .transfer-arrow {
+            color: #64748b;
+            font-size: 12px;
+        }
+        
+        .transfer-to {
+            color: white;
+            font-weight: 600;
+        }
+        
+        .transfer-points {
+            font-size: 20px;
+            font-weight: 900;
+        }
+        
+        .transfer-points.income {
+            color: #22d3ee;
+        }
+        
+        .transfer-points.expense {
+            color: #ef4444;
+        }
+        
+        .transfer-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #64748b;
+            font-size: 12px;
+        }
+        
+        .transfer-time {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .transfer-round {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* 底部TabBar */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 1000;
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            color: #64748b;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+        }
+        
+        .tab-item.active {
+            color: #22d3ee;
+        }
+        
+        .tab-item i {
+            font-size: 24px;
+            transition: all 0.3s;
+        }
+        
+        .tab-item.active i {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.8));
+        }
+    </style>
+</head>
+<body>
+    <!-- iOS状态栏 -->
+    <div class="status-bar">
+        <div class="time">9:41</div>
+        <div class="icons">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-three-quarters"></i>
+        </div>
+    </div>
+    
+    <!-- 主内容区域 -->
+    <div class="content">
+        <!-- 统计概览 -->
+        <div class="stats-overview">
+            <div class="stats-title">积分统计</div>
+            <div class="stats-cards">
+                <div class="stat-card income">
+                    <div class="stat-icon">
+                        <i class="fas fa-arrow-up"></i>
+                    </div>
+                    <div class="stat-label">总收入</div>
+                    <div class="stat-value">+385</div>
+                    <div class="stat-detail">12笔交易</div>
+                </div>
+                <div class="stat-card expense">
+                    <div class="stat-icon">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                    <div class="stat-label">总支出</div>
+                    <div class="stat-value">-100</div>
+                    <div class="stat-detail">8笔交易</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 筛选标签 -->
+        <div class="filter-tabs">
+            <div class="filter-tab active">全部</div>
+            <div class="filter-tab">收入</div>
+            <div class="filter-tab">支出</div>
+            <div class="filter-tab">本回合</div>
+            <div class="filter-tab">上回合</div>
+        </div>
+        
+        <!-- 转移记录 -->
+        <div class="transfers-section">
+            <div class="section-title">
+                <div class="section-title-left">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>转移记录</span>
+                </div>
+                <div class="count-badge">共20条</div>
+            </div>
+            
+            <div class="transfer-list">
+                <!-- 收入记录 -->
+                <div class="transfer-item">
+                    <div class="transfer-header">
+                        <div class="transfer-players">
+                            <span class="transfer-from">李华</span>
+                            <span class="transfer-arrow"><i class="fas fa-long-arrow-alt-right"></i></span>
+                            <span class="transfer-to">你</span>
+                        </div>
+                        <div class="transfer-points income">+50</div>
+                    </div>
+                    <div class="transfer-meta">
+                        <div class="transfer-time">
+                            <i class="far fa-clock"></i>
+                            <span>2分钟前</span>
+                        </div>
+                        <div class="transfer-round">
+                            <i class="fas fa-layer-group"></i>
+                            <span>第3回合</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 支出记录 -->
+                <div class="transfer-item">
+                    <div class="transfer-header">
+                        <div class="transfer-players">
+                            <span class="transfer-from">你</span>
+                            <span class="transfer-arrow"><i class="fas fa-long-arrow-alt-right"></i></span>
+                            <span class="transfer-to">王芳</span>
+                        </div>
+                        <div class="transfer-points expense">-30</div>
+                    </div>
+                    <div class="transfer-meta">
+                        <div class="transfer-time">
+                            <i class="far fa-clock"></i>
+                            <span>5分钟前</span>
+                        </div>
+                        <div class="transfer-round">
+                            <i class="fas fa-layer-group"></i>
+                            <span>第3回合</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 收入记录 -->
+                <div class="transfer-item">
+                    <div class="transfer-header">
+                        <div class="transfer-players">
+                            <span class="transfer-from">刘强</span>
+                            <span class="transfer-arrow"><i class="fas fa-long-arrow-alt-right"></i></span>
+                            <span class="transfer-to">你</span>
+                        </div>
+                        <div class="transfer-points income">+120</div>
+                    </div>
+                    <div class="transfer-meta">
+                        <div class="transfer-time">
+                            <i class="far fa-clock"></i>
+                            <span>12分钟前</span>
+                        </div>
+                        <div class="transfer-round">
+                            <i class="fas fa-layer-group"></i>
+                            <span>第2回合</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 支出记录 -->
+                <div class="transfer-item">
+                    <div class="transfer-header">
+                        <div class="transfer-players">
+                            <span class="transfer-from">你</span>
+                            <span class="transfer-arrow"><i class="fas fa-long-arrow-alt-right"></i></span>
+                            <span class="transfer-to">李华</span>
+                        </div>
+                        <div class="transfer-points expense">-45</div>
+                    </div>
+                    <div class="transfer-meta">
+                        <div class="transfer-time">
+                            <i class="far fa-clock"></i>
+                            <span>18分钟前</span>
+                        </div>
+                        <div class="transfer-round">
+                            <i class="fas fa-layer-group"></i>
+                            <span>第2回合</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 收入记录 -->
+                <div class="transfer-item">
+                    <div class="transfer-header">
+                        <div class="transfer-players">
+                            <span class="transfer-from">王芳</span>
+                            <span class="transfer-arrow"><i class="fas fa-long-arrow-alt-right"></i></span>
+                            <span class="transfer-to">你</span>
+                        </div>
+                        <div class="transfer-points income">+85</div>
+                    </div>
+                    <div class="transfer-meta">
+                        <div class="transfer-time">
+                            <i class="far fa-clock"></i>
+                            <span>25分钟前</span>
+                        </div>
+                        <div class="transfer-round">
+                            <i class="fas fa-layer-group"></i>
+                            <span>第1回合</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 支出记录 -->
+                <div class="transfer-item">
+                    <div class="transfer-header">
+                        <div class="transfer-players">
+                            <span class="transfer-from">你</span>
+                            <span class="transfer-arrow"><i class="fas fa-long-arrow-alt-right"></i></span>
+                            <span class="transfer-to">刘强</span>
+                        </div>
+                        <div class="transfer-points expense">-25</div>
+                    </div>
+                    <div class="transfer-meta">
+                        <div class="transfer-time">
+                            <i class="far fa-clock"></i>
+                            <span>32分钟前</span>
+                        </div>
+                        <div class="transfer-round">
+                            <i class="fas fa-layer-group"></i>
+                            <span>第1回合</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部TabBar -->
+    <div class="tab-bar">
+        <div class="tab-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </div>
+        <div class="tab-item active">
+            <i class="fas fa-chart-bar"></i>
+            <span>统计</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-history"></i>
+            <span>记录</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-user-circle"></i>
+            <span>我的</span>
+        </div>
+    </div>
+</body>
+</html>
+

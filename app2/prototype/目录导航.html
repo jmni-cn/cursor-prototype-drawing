@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScoreKeeper - 原型导航</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #22d3ee 0%, #ff48f9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            color: #94a3b8;
+            margin-bottom: 10px;
+        }
+        
+        .version {
+            display: inline-block;
+            padding: 8px 20px;
+            background: rgba(34, 211, 238, 0.1);
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #22d3ee;
+            margin-top: 15px;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #22d3ee;
+        }
+        
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(34, 211, 238, 0.5);
+            box-shadow: 0 10px 40px rgba(34, 211, 238, 0.2);
+        }
+        
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: white;
+        }
+        
+        .card-desc {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .card-link {
+            display: inline-block;
+            color: #22d3ee;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .card-link:hover {
+            color: #ff48f9;
+        }
+        
+        .docs-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 15px;
+        }
+        
+        .doc-item {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 18px 22px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s;
+        }
+        
+        .doc-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(34, 211, 238, 0.3);
+        }
+        
+        .doc-icon {
+            font-size: 1.8rem;
+        }
+        
+        .doc-info {
+            flex: 1;
+        }
+        
+        .doc-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: white;
+        }
+        
+        .doc-desc {
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+        
+        .doc-link {
+            color: #22d3ee;
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+        
+        .quick-start {
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.1) 0%, rgba(255, 72, 249, 0.1) 100%);
+            border: 2px solid rgba(34, 211, 238, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .quick-start h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .quick-start p {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        
+        .btn-primary {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%);
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(34, 211, 238, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 50px rgba(34, 211, 238, 0.4);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 40px 0;
+            color: #64748b;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>🎮 ScoreKeeper</h1>
+            <p>多人在线计分小程序 - 高保真原型</p>
+            <span class="version">v2.0 | 2025-11-04</span>
+        </div>
+        
+        <!-- 快速开始 -->
+        <div class="quick-start">
+            <h2>🚀 快速开始</h2>
+            <p>
+                点击下方按钮查看所有原型页面<br>
+                所有页面将以iPhone 16 Pro样式平铺展示
+            </p>
+            <a href="index.html" class="btn-primary">查看完整原型</a>
+        </div>
+        
+        <!-- 原型页面 -->
+        <div class="section">
+            <div class="section-title">
+                📱 原型页面 (9个)
+            </div>
+            <div class="cards-grid">
+                <div class="card" onclick="window.open('home.html', '_blank')">
+                    <div class="card-icon">🏠</div>
+                    <div class="card-title">1. 首页</div>
+                    <div class="card-desc">创建房间、加入房间、快速入口、活跃对局列表</div>
+                    <a href="home.html" class="card-link" target="_blank">查看页面 →</a>
+                </div>
+                
+                <div class="card" onclick="window.open('room.html', '_blank')">
+                    <div class="card-icon">👥</div>
+                    <div class="card-title">2. 房间页面</div>
+                    <div class="card-desc">玩家列表、实时计分板、WebSocket连接状态、房间管理</div>
+                    <a href="room.html" class="card-link" target="_blank">查看页面 →</a>
+                </div>
+                
+                <div class="card" onclick="window.open('score.html', '_blank')">
+                    <div class="card-icon">➕</div>
+                    <div class="card-title">3. 计分页面</div>
+                    <div class="card-desc">数字键盘、快速分数、选择接收者、批量加分</div>
+                    <a href="score.html" class="card-link" target="_blank">查看页面 →</a>
+                </div>
+                
+                <div class="card" onclick="window.open('share.html', '_blank')">
+                    <div class="card-icon">📤</div>
+                    <div class="card-title">4. 分享页面</div>
+                    <div class="card-desc">二维码展示、房间ID复制、微信分享、使用说明</div>
+                    <a href="share.html" class="card-link" target="_blank">查看页面 →</a>
+                </div>
+                
+                <div class="card" onclick="window.open('stats.html', '_blank')">
+                    <div class="card-icon">📊</div>
+                    <div class="card-title">5. 统计页面</div>
+                    <div class="card-desc">收支统计、转移记录、积分明细、筛选功能</div>
+                    <a href="stats.html" class="card-link" target="_blank">查看页面 →</a>
+                </div>
+                
+                <div class="card" onclick="window.open('history.html', '_blank')">
+                    <div class="card-icon">🕐</div>
+                    <div class="card-title">6. 历史记录</div>
+                    <div class="card-desc">过往对局、排名展示、按日期分组、成绩查询</div>
+                    <a href="history.html" class="card-link" target="_blank">查看页面 →</a>
+                </div>
+                
+                <div class="card" onclick="window.open('profile.html', '_blank')">
+                    <div class="card-icon">👤</div>
+                    <div class="card-title">7. 个人中心</div>
+                    <div class="card-desc">用户资料、功能菜单、数据统计、系统设置</div>
+                    <a href="profile.html" class="card-link" target="_blank">查看页面 →</a>
+                </div>
+                
+                <div class="card" onclick="window.open('join.html', '_blank')">
+                    <div class="card-icon">🔗</div>
+                    <div class="card-title">8. 加入房间</div>
+                    <div class="card-desc">扫码加入、输入ID、最近访问、加入提示</div>
+                    <a href="join.html" class="card-link" target="_blank">查看页面 →</a>
+                </div>
+                
+                <div class="card" onclick="window.open('index.html', '_blank')">
+                    <div class="card-icon">🖼️</div>
+                    <div class="card-title">0. 主入口展示</div>
+                    <div class="card-desc">iframe平铺展示所有原型，手机屏幕框架</div>
+                    <a href="index.html" class="card-link" target="_blank">查看页面 →</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 项目文档 -->
+        <div class="section">
+            <div class="section-title">
+                📚 项目文档
+            </div>
+            <div class="docs-list">
+                <a href="../README.md" class="doc-item">
+                    <div class="doc-icon">📖</div>
+                    <div class="doc-info">
+                        <div class="doc-name">README.md</div>
+                        <div class="doc-desc">项目完整说明文档</div>
+                    </div>
+                    <div class="doc-link">→</div>
+                </a>
+                
+                <a href="快速开始.md" class="doc-item">
+                    <div class="doc-icon">🚀</div>
+                    <div class="doc-info">
+                        <div class="doc-name">快速开始.md</div>
+                        <div class="doc-desc">用户使用指南</div>
+                    </div>
+                    <div class="doc-link">→</div>
+                </a>
+                
+                <a href="../项目总结.md" class="doc-item">
+                    <div class="doc-icon">📝</div>
+                    <div class="doc-info">
+                        <div class="doc-name">项目总结.md</div>
+                        <div class="doc-desc">项目复盘与总结</div>
+                    </div>
+                    <div class="doc-link">→</div>
+                </a>
+                
+                <a href="../match-api.md" class="doc-item">
+                    <div class="doc-icon">⚙️</div>
+                    <div class="doc-info">
+                        <div class="doc-name">match-api.md</div>
+                        <div class="doc-desc">后端API完整文档</div>
+                    </div>
+                    <div class="doc-link">→</div>
+                </a>
+                
+                <a href="../FEATURES.md" class="doc-item">
+                    <div class="doc-icon">✨</div>
+                    <div class="doc-info">
+                        <div class="doc-name">FEATURES.md</div>
+                        <div class="doc-desc">功能清单说明</div>
+                    </div>
+                    <div class="doc-link">→</div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 设计规范 -->
+        <div class="section">
+            <div class="section-title">
+                🎨 设计规范
+            </div>
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-icon">🎨</div>
+                    <div class="card-title">配色方案</div>
+                    <div class="card-desc">
+                        主色: #22d3ee (霓虹青绿)<br>
+                        强调色: #ff48f9 (霓虹紫粉)<br>
+                        背景: #0f172a (深蓝黑)
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon">📐</div>
+                    <div class="card-title">尺寸规范</div>
+                    <div class="card-desc">
+                        屏幕: 393×852 px<br>
+                        状态栏: 44px | TabBar: 80px<br>
+                        圆角: 20px (卡片), 50px (手机)
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon">🔤</div>
+                    <div class="card-title">字体规范</div>
+                    <div class="card-desc">
+                        标题: 22-24px (font-weight: 900)<br>
+                        正文: 14-16px<br>
+                        小字: 12-13px
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 页脚 -->
+        <div class="footer">
+            <p>ScoreKeeper v2.0 | 高保真原型设计</p>
+            <p style="margin-top: 10px; font-size: 0.85rem;">
+                技术栈: HTML5 + Tailwind CSS + Font Awesome | 适配: iPhone 16 Pro
+            </p>
+            <p style="margin-top: 15px; font-size: 0.8rem;">
+                © 2025 ScoreKeeper | 创建日期: 2025-11-04
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+

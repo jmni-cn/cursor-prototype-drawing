@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加入房间 - ScoreKeeper</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* iOS状态栏 */
+        .status-bar {
+            height: 44px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        
+        /* 导航栏 */
+        .nav-bar {
+            height: 60px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: fixed;
+            top: 44px;
+            left: 0;
+            right: 0;
+            z-index: 999;
+        }
+        
+        .nav-bar .back-btn {
+            color: #22d3ee;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-bar .title {
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        .nav-bar .action {
+            width: 60px;
+        }
+        
+        /* 内容区域 */
+        .content {
+            padding-top: 104px;
+            padding-bottom: 40px;
+            min-height: 100vh;
+        }
+        
+        /* 标签切换 */
+        .tab-switcher {
+            padding: 0 20px 30px;
+        }
+        
+        .tab-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 6px;
+        }
+        
+        .tab-btn {
+            padding: 12px;
+            border-radius: 12px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .tab-btn.active {
+            background: linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(34, 211, 238, 0.3);
+        }
+        
+        /* 扫码区域 */
+        .scan-section {
+            padding: 0 20px 30px;
+        }
+        
+        .scan-area {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 2px dashed rgba(34, 211, 238, 0.3);
+            border-radius: 24px;
+            padding: 60px 40px;
+            text-align: center;
+        }
+        
+        .scan-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.2) 0%, rgba(255, 72, 249, 0.2) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            color: #22d3ee;
+        }
+        
+        .scan-title {
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .scan-desc {
+            color: #94a3b8;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        
+        .scan-btn {
+            background: linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%);
+            color: white;
+            padding: 14px 40px;
+            border-radius: 14px;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 20px rgba(34, 211, 238, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .scan-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* 输入区域 */
+        .input-section {
+            padding: 0 20px 30px;
+        }
+        
+        .section-title {
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title i {
+            color: #22d3ee;
+        }
+        
+        .input-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .input-label {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+        
+        .input-field {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #22d3ee;
+            box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.1);
+        }
+        
+        .input-field::placeholder {
+            color: #64748b;
+            letter-spacing: normal;
+        }
+        
+        .nickname-field {
+            text-align: left;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            letter-spacing: normal;
+            font-weight: 400;
+        }
+        
+        .join-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 14px;
+            border: none;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 25px rgba(34, 211, 238, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .join-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .join-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* 最近房间 */
+        .recent-section {
+            padding: 0 20px 30px;
+        }
+        
+        .recent-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .recent-item {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .recent-item:active {
+            transform: scale(0.98);
+            border-color: rgba(34, 211, 238, 0.5);
+        }
+        
+        .recent-item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .recent-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.2) 0%, rgba(255, 72, 249, 0.2) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .recent-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .recent-name {
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+        }
+        
+        .recent-time {
+            color: #64748b;
+            font-size: 12px;
+        }
+        
+        .recent-arrow {
+            color: #64748b;
+            font-size: 14px;
+        }
+        
+        /* 提示信息 */
+        .tip-card {
+            background: rgba(34, 211, 238, 0.1);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+            border-radius: 14px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .tip-icon {
+            color: #22d3ee;
+            font-size: 18px;
+            margin-top: 2px;
+        }
+        
+        .tip-content {
+            flex: 1;
+        }
+        
+        .tip-title {
+            color: #22d3ee;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        
+        .tip-text {
+            color: #94a3b8;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <!-- iOS状态栏 -->
+    <div class="status-bar">
+        <div class="time">9:41</div>
+        <div class="icons">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-three-quarters"></i>
+        </div>
+    </div>
+    
+    <!-- 导航栏 -->
+    <div class="nav-bar">
+        <div class="back-btn">
+            <i class="fas fa-chevron-left"></i>
+            <span>返回</span>
+        </div>
+        <div class="title">加入房间</div>
+        <div class="action"></div>
+    </div>
+    
+    <!-- 主内容区域 -->
+    <div class="content">
+        <!-- 标签切换 -->
+        <div class="tab-switcher">
+            <div class="tab-buttons">
+                <button class="tab-btn active">
+                    <i class="fas fa-qrcode"></i>
+                    <span>扫码加入</span>
+                </button>
+                <button class="tab-btn">
+                    <i class="fas fa-keyboard"></i>
+                    <span>输入ID</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 扫码区域 -->
+        <div class="scan-section">
+            <div class="scan-area">
+                <div class="scan-icon">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+                <div class="scan-title">扫描二维码</div>
+                <div class="scan-desc">
+                    对准房主分享的二维码<br>即可快速加入房间
+                </div>
+                <button class="scan-btn">
+                    <i class="fas fa-camera"></i>
+                    <span>开始扫描</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 或者输入ID（仅在扫码标签时显示） -->
+        <div class="input-section" style="display: none;">
+            <div class="section-title">
+                <i class="fas fa-hashtag"></i>
+                <span>输入房间信息</span>
+            </div>
+            
+            <div class="input-card">
+                <div class="input-label">房间ID</div>
+                <input type="text" class="input-field" placeholder="请输入5位房间ID" maxlength="5">
+            </div>
+            
+            <div class="input-card">
+                <div class="input-label">您的昵称</div>
+                <input type="text" class="input-field nickname-field" placeholder="请输入昵称（1-20字符）" maxlength="20">
+            </div>
+            
+            <button class="join-btn">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>加入房间</span>
+            </button>
+        </div>
+        
+        <!-- 最近访问 -->
+        <div class="recent-section">
+            <div class="section-title">
+                <i class="fas fa-clock"></i>
+                <span>最近访问</span>
+            </div>
+            
+            <div class="recent-list">
+                <div class="recent-item">
+                    <div class="recent-item-left">
+                        <div class="recent-icon">🀄</div>
+                        <div class="recent-info">
+                            <div class="recent-name">周末麻将局</div>
+                            <div class="recent-time">2小时前访问</div>
+                        </div>
+                    </div>
+                    <div class="recent-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+                
+                <div class="recent-item">
+                    <div class="recent-item-left">
+                        <div class="recent-icon">🐺</div>
+                        <div class="recent-info">
+                            <div class="recent-name">狼人杀</div>
+                            <div class="recent-time">昨天访问</div>
+                        </div>
+                    </div>
+                    <div class="recent-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 提示卡片 -->
+        <div class="input-section">
+            <div class="tip-card">
+                <div class="tip-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <div class="tip-content">
+                    <div class="tip-title">加入提示</div>
+                    <div class="tip-text">
+                        • 确保房间处于等待状态<br>
+                        • 房间ID为5位大写字母和数字<br>
+                        • 昵称将在房间内显示
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 标签切换逻辑（仅用于演示）
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const scanSection = document.querySelector('.scan-section');
+        const inputSection = document.querySelectorAll('.input-section')[0];
+        
+        tabButtons.forEach((btn, index) => {
+            btn.addEventListener('click', () => {
+                tabButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                if (index === 0) {
+                    scanSection.style.display = 'block';
+                    inputSection.style.display = 'none';
+                } else {
+                    scanSection.style.display = 'none';
+                    inputSection.style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
