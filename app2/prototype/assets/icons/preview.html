@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScoreKeeper 图标预览</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #22d3ee 0%, #ff48f9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+        
+        .header p {
+            color: #94a3b8;
+            font-size: 1.2rem;
+        }
+        
+        .section {
+            margin-bottom: 60px;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #22d3ee;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .icons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+        }
+        
+        .icon-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .icon-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(34, 211, 238, 0.5);
+            box-shadow: 0 10px 40px rgba(34, 211, 238, 0.2);
+        }
+        
+        .icon-wrapper {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+        
+        .icon-wrapper img {
+            width: 48px;
+            height: 48px;
+        }
+        
+        .icon-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 4px;
+        }
+        
+        .icon-file {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .color-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+        
+        .cyan { background: rgba(34, 211, 238, 0.2); color: #22d3ee; }
+        .purple { background: rgba(255, 72, 249, 0.2); color: #ff48f9; }
+        .gold { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .red { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .mixed { background: linear-gradient(135deg, rgba(34, 211, 238, 0.2) 0%, rgba(255, 72, 249, 0.2) 100%); color: white; }
+        
+        .stats {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 60px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #22d3ee 0%, #ff48f9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>🎨 ScoreKeeper 图标库</h1>
+            <p>赛博朋克风格 SVG 图标集合 | 23个图标</p>
+        </div>
+        
+        <!-- 统计 -->
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value">23</div>
+                <div class="stat-label">总图标数</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">5</div>
+                <div class="stat-label">颜色方案</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">24px</div>
+                <div class="stat-label">标准尺寸</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">SVG</div>
+                <div class="stat-label">矢量格式</div>
+            </div>
+        </div>
+        
+        <!-- TabBar 图标 -->
+        <div class="section">
+            <div class="section-title">
+                📱 TabBar 图标
+            </div>
+            <div class="icons-grid">
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="home.svg" alt="首页">
+                    </div>
+                    <div class="icon-name">首页</div>
+                    <div class="icon-file">home.svg</div>
+                    <div class="color-badge cyan">青色渐变</div>
+                </div>
+                
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="chart-bar.svg" alt="统计">
+                    </div>
+                    <div class="icon-name">统计</div>
+                    <div class="icon-file">chart-bar.svg</div>
+                    <div class="color-badge purple">紫粉渐变</div>
+                </div>
+                
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="history.svg" alt="历史">
+                    </div>
+                    <div class="icon-name">历史记录</div>
+                    <div class="icon-file">history.svg</div>
+                    <div class="color-badge cyan">青色渐变</div>
+                </div>
+                
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="user-circle.svg" alt="个人">
+                    </div>
+                    <div class="icon-name">个人中心</div>
+                    <div class="icon-file">user-circle.svg</div>
+                    <div class="color-badge purple">紫粉渐变</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 常用操作图标 -->
+        <div class="section">
+            <div class="section-title">
+                🔧 常用操作图标
+            </div>
+            <div class="icons-grid">
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="arrow-left.svg" alt="返回">
+                    </div>
+                    <div class="icon-name">返回</div>
+                    <div class="icon-file">arrow-left.svg</div>
+                    <div class="color-badge cyan">青色渐变</div>
+                </div>
+                
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="plus.svg" alt="加号">
+                    </div>
+                    <div class="icon-name">加号</div>
+                    <div class="icon-file">plus.svg</div>
+                    <div class="color-badge cyan">青色渐变</div>
+                </div>
+                
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="share.svg" alt="分享">
+                    </div>
+                    <div class="icon-name">分享</div>
+                    <div class="icon-file">share.svg</div>
+                    <div class="color-badge purple">紫粉渐变</div>
+                </div>
+                
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="qrcode.svg" alt="二维码">
+                    </div>
+                    <div class="icon-name">二维码</div>
+                    <div class="icon-file">qrcode.svg</div>
+                    <div class="color-badge cyan">青色渐变</div>
+                </div>
+                
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="settings.svg" alt="设置">
+                    </div>
+                    <div class="icon-name">设置</div>
+                    <div class="icon-file">settings.svg</div>
+                    <div class="color-badge purple">紫粉渐变</div>
+                </div>
+                
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="bell.svg" alt="通知">
+                    </div>
+                    <div class="icon-name">通知</div>
+                    <div class="icon-file">bell.svg</div>
+                    <div class="color-badge cyan">青色渐变</div>
+                </div>
+                
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="search.svg" alt="搜索">
+                    </div>
+                    <div class="icon-name">搜索</div>
+                    <div class="icon-file">search.svg</div>
+                    <div class="color-badge cyan">青色渐变</div>
+                </div>
+                
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="check.svg" alt="确认">
+                    </div>
+                    <div class="icon-name">确认</div>
+                    <div class="icon-file">check.svg</div>
+                    <div class="color-badge cyan">青色渐变</div>
+                </div>
+                
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="close.svg" alt="关闭">
+                    </div>
+                    <div class="icon-name">关闭</div>
+                    <div class="icon-file">close.svg</div>
+                    <div class="color-badge red">红色渐变</div>
+                </div>
+                
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="refresh.svg" alt="刷新">
+                    </div>
+                    <div class="icon-name">刷新</div>
+                    <div class="icon-file">refresh.svg</div>
+                    <div class="color-badge cyan">青色渐变</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 游戏相关图标 -->
+        <div class="section">
+            <div class="section-title">
+                🎮 游戏相关图标
+            </div>
+            <div class="icons-grid">
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="users.svg" alt="玩家">
+                    </div>
+                    <div class="icon-name">玩家</div>
+                    <div class="icon-file">users.svg</div>
+                    <div class="color-badge cyan">青色渐变</div>
+                </div>
+                
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="gamepad.svg" alt="游戏">
+                    </div>
+                    <div class="icon-name">游戏</div>
+                    <div class="icon-file">gamepad.svg</div>
+                    <div class="color-badge mixed">混合渐变</div>
+                </div>
+                
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="trophy.svg" alt="奖杯">
+                    </div>
+                    <div class="icon-name">奖杯</div>
+                    <div class="icon-file">trophy.svg</div>
+                    <div class="color-badge gold">金色渐变</div>
+                </div>
+                
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="crown.svg" alt="皇冠">
+                    </div>
+                    <div class="icon-name">皇冠</div>
+                    <div class="icon-file">crown.svg</div>
+                    <div class="color-badge gold">金色渐变</div>
+                </div>
+                
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="fire.svg" alt="火焰">
+                    </div>
+                    <div class="icon-name">火焰</div>
+                    <div class="icon-file">fire.svg</div>
+                    <div class="color-badge red">火焰渐变</div>
+                </div>
+                
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="clock.svg" alt="时钟">
+                    </div>
+                    <div class="icon-name">时钟</div>
+                    <div class="icon-file">clock.svg</div>
+                    <div class="color-badge cyan">青色渐变</div>
+                </div>
+                
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="star.svg" alt="星星">
+                    </div>
+                    <div class="icon-name">星星</div>
+                    <div class="icon-file">star.svg</div>
+                    <div class="color-badge gold">金色渐变</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 其他功能图标 -->
+        <div class="section">
+            <div class="section-title">
+                📷 其他功能图标
+            </div>
+            <div class="icons-grid">
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="download.svg" alt="下载">
+                    </div>
+                    <div class="icon-name">下载</div>
+                    <div class="icon-file">download.svg</div>
+                    <div class="color-badge purple">紫粉渐变</div>
+                </div>
+                
+                <div class="icon-card">
+                    <div class="icon-wrapper">
+                        <img src="camera.svg" alt="相机">
+                    </div>
+                    <div class="icon-name">相机</div>
+                    <div class="icon-file">camera.svg</div>
+                    <div class="color-badge cyan">青色渐变</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

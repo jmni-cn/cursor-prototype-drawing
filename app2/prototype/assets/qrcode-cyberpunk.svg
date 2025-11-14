@@ -1,0 +1,196 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- 霓虹发光滤镜 -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- 渐变色 - 青色到紫色 -->
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22d3ee;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ff48f9;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- 渐变色 - 紫色到青色 -->
+    <linearGradient id="gradient2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff48f9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#22d3ee;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- 渐变色 - 纯青色 -->
+    <linearGradient id="cyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22d3ee;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0ea5e9;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- 渐变色 - 纯紫色 -->
+    <linearGradient id="purple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff48f9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect width="200" height="200" fill="#0f172a"/>
+  
+  <!-- 外边框发光 -->
+  <rect x="10" y="10" width="180" height="180" fill="none" stroke="url(#gradient1)" stroke-width="2" filter="url(#glow)" opacity="0.6"/>
+  
+  <!-- 左上角定位点 -->
+  <g filter="url(#glow)">
+    <rect x="20" y="20" width="50" height="50" fill="none" stroke="url(#cyan)" stroke-width="4" rx="4"/>
+    <rect x="28" y="28" width="34" height="34" fill="url(#cyan)" rx="2"/>
+    <rect x="34" y="34" width="22" height="22" fill="#0f172a" rx="2"/>
+  </g>
+  
+  <!-- 右上角定位点 -->
+  <g filter="url(#glow)">
+    <rect x="130" y="20" width="50" height="50" fill="none" stroke="url(#purple)" stroke-width="4" rx="4"/>
+    <rect x="138" y="28" width="34" height="34" fill="url(#purple)" rx="2"/>
+    <rect x="144" y="34" width="22" height="22" fill="#0f172a" rx="2"/>
+  </g>
+  
+  <!-- 左下角定位点 -->
+  <g filter="url(#glow)">
+    <rect x="20" y="130" width="50" height="50" fill="none" stroke="url(#gradient2)" stroke-width="4" rx="4"/>
+    <rect x="28" y="138" width="34" height="34" fill="url(#gradient2)" rx="2"/>
+    <rect x="34" y="144" width="22" height="22" fill="#0f172a" rx="2"/>
+  </g>
+  
+  <!-- 模拟二维码数据区域 - 使用霓虹色块 -->
+  <!-- 第1行 -->
+  <rect x="80" y="20" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  <rect x="92" y="20" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  <rect x="104" y="20" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  <rect x="116" y="20" width="8" height="8" fill="url(#gradient1)" filter="url(#glow)" rx="1"/>
+  
+  <!-- 第2行 -->
+  <rect x="80" y="32" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  <rect x="104" y="32" width="8" height="8" fill="url(#gradient2)" filter="url(#glow)" rx="1"/>
+  <rect x="116" y="32" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  
+  <!-- 第3行 -->
+  <rect x="80" y="44" width="8" height="8" fill="url(#gradient1)" filter="url(#glow)" rx="1"/>
+  <rect x="92" y="44" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  <rect x="104" y="44" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  <rect x="116" y="44" width="8" height="8" fill="url(#gradient2)" filter="url(#glow)" rx="1"/>
+  
+  <!-- 第4行 -->
+  <rect x="80" y="56" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  <rect x="92" y="56" width="8" height="8" fill="url(#gradient1)" filter="url(#glow)" rx="1"/>
+  <rect x="116" y="56" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  
+  <!-- 中间区域 -->
+  <rect x="20" y="80" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  <rect x="32" y="80" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  <rect x="44" y="80" width="8" height="8" fill="url(#gradient1)" filter="url(#glow)" rx="1"/>
+  <rect x="56" y="80" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  
+  <rect x="80" y="80" width="8" height="8" fill="url(#gradient2)" filter="url(#glow)" rx="1"/>
+  <rect x="92" y="80" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  <rect x="104" y="80" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  <rect x="116" y="80" width="8" height="8" fill="url(#gradient1)" filter="url(#glow)" rx="1"/>
+  
+  <rect x="130" y="80" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  <rect x="142" y="80" width="8" height="8" fill="url(#gradient2)" filter="url(#glow)" rx="1"/>
+  <rect x="154" y="80" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  <rect x="166" y="80" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  
+  <!-- 第5行 -->
+  <rect x="20" y="92" width="8" height="8" fill="url(#gradient1)" filter="url(#glow)" rx="1"/>
+  <rect x="44" y="92" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  <rect x="56" y="92" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  
+  <rect x="80" y="92" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  <rect x="104" y="92" width="8" height="8" fill="url(#gradient2)" filter="url(#glow)" rx="1"/>
+  <rect x="116" y="92" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  
+  <rect x="130" y="92" width="8" height="8" fill="url(#gradient1)" filter="url(#glow)" rx="1"/>
+  <rect x="154" y="92" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  <rect x="166" y="92" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  
+  <!-- 第6行 -->
+  <rect x="20" y="104" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  <rect x="32" y="104" width="8" height="8" fill="url(#gradient2)" filter="url(#glow)" rx="1"/>
+  <rect x="56" y="104" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  
+  <rect x="80" y="104" width="8" height="8" fill="url(#gradient1)" filter="url(#glow)" rx="1"/>
+  <rect x="92" y="104" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  <rect x="116" y="104" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  
+  <rect x="130" y="104" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  <rect x="142" y="104" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  <rect x="166" y="104" width="8" height="8" fill="url(#gradient1)" filter="url(#glow)" rx="1"/>
+  
+  <!-- 第7行 -->
+  <rect x="32" y="116" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  <rect x="44" y="116" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  <rect x="56" y="116" width="8" height="8" fill="url(#gradient2)" filter="url(#glow)" rx="1"/>
+  
+  <rect x="80" y="116" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  <rect x="104" y="116" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  <rect x="116" y="116" width="8" height="8" fill="url(#gradient1)" filter="url(#glow)" rx="1"/>
+  
+  <rect x="130" y="116" width="8" height="8" fill="url(#gradient2)" filter="url(#glow)" rx="1"/>
+  <rect x="154" y="116" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  <rect x="166" y="116" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  
+  <!-- 底部区域 -->
+  <rect x="80" y="130" width="8" height="8" fill="url(#gradient1)" filter="url(#glow)" rx="1"/>
+  <rect x="92" y="130" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  <rect x="104" y="130" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  <rect x="116" y="130" width="8" height="8" fill="url(#gradient2)" filter="url(#glow)" rx="1"/>
+  
+  <rect x="80" y="142" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  <rect x="104" y="142" width="8" height="8" fill="url(#gradient1)" filter="url(#glow)" rx="1"/>
+  <rect x="116" y="142" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  
+  <rect x="80" y="154" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  <rect x="92" y="154" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  <rect x="104" y="154" width="8" height="8" fill="url(#gradient2)" filter="url(#glow)" rx="1"/>
+  <rect x="116" y="154" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  
+  <rect x="92" y="166" width="8" height="8" fill="url(#gradient1)" filter="url(#glow)" rx="1"/>
+  <rect x="104" y="166" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  <rect x="116" y="166" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  
+  <rect x="80" y="178" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  <rect x="92" y="178" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  <rect x="116" y="178" width="8" height="8" fill="url(#gradient2)" filter="url(#glow)" rx="1"/>
+  
+  <!-- 右侧区域装饰 -->
+  <rect x="130" y="130" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  <rect x="142" y="130" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  <rect x="154" y="130" width="8" height="8" fill="url(#gradient1)" filter="url(#glow)" rx="1"/>
+  <rect x="166" y="130" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  <rect x="178" y="130" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  
+  <rect x="130" y="142" width="8" height="8" fill="url(#gradient2)" filter="url(#glow)" rx="1"/>
+  <rect x="154" y="142" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  <rect x="166" y="142" width="8" height="8" fill="url(#gradient1)" filter="url(#glow)" rx="1"/>
+  <rect x="178" y="142" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  
+  <rect x="142" y="154" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  <rect x="154" y="154" width="8" height="8" fill="url(#gradient2)" filter="url(#glow)" rx="1"/>
+  <rect x="178" y="154" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  
+  <rect x="130" y="166" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  <rect x="142" y="166" width="8" height="8" fill="url(#gradient1)" filter="url(#glow)" rx="1"/>
+  <rect x="166" y="166" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  <rect x="178" y="166" width="8" height="8" fill="url(#gradient2)" filter="url(#glow)" rx="1"/>
+  
+  <rect x="130" y="178" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  <rect x="154" y="178" width="8" height="8" fill="url(#purple)" filter="url(#glow)" rx="1"/>
+  <rect x="166" y="178" width="8" height="8" fill="url(#gradient1)" filter="url(#glow)" rx="1"/>
+  <rect x="178" y="178" width="8" height="8" fill="url(#cyan)" filter="url(#glow)" rx="1"/>
+  
+  <!-- 中心Logo区域 -->
+  <g filter="url(#glow)">
+    <circle cx="100" cy="100" r="16" fill="#0f172a" stroke="url(#gradient1)" stroke-width="3"/>
+    <text x="100" y="108" text-anchor="middle" font-size="20" font-weight="bold" fill="url(#gradient1)">🎮</text>
+  </g>
+</svg>
